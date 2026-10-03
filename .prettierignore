@@ -1,0 +1,8 @@
+node_modules
+dist
+coverage
+pnpm-lock.yaml
+src/api/generated
+AGENTS.md
+docs/PROJECT_SPEC.md
+docs/api/openapi.json

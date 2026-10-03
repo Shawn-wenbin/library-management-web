@@ -1,0 +1,98 @@
+:root {
+  font-family: system-ui, sans-serif;
+  color: #21352f;
+  background: #f4f6f3;
+}
+body {
+  margin: 0;
+  min-width: 320px;
+}
+.login-page {
+  min-height: 100dvh;
+  display: grid;
+  grid-template-columns: 1fr 420px;
+  align-items: center;
+  gap: 80px;
+  max-width: 1100px;
+  margin: auto;
+  padding: 48px;
+}
+.brand-caption {
+  color: #246454;
+  font-size: 12px;
+  letter-spacing: 3px;
+  font-weight: 700;
+}
+.login-intro .ant-typography {
+  color: #163e35;
+}
+.login-intro h1.ant-typography {
+  font-size: clamp(32px, 4vw, 48px);
+  line-height: 1.35;
+  margin-top: 24px;
+}
+.login-card {
+  box-shadow: 0 16px 60px #163e350a;
+}
+.login-card .ant-card-body {
+  padding: 36px;
+}
+.login-card form {
+  margin-top: 28px;
+}
+.login-error {
+  margin-bottom: 24px;
+}
+.app-layout {
+  min-height: 100dvh;
+}
+.sidebar-brand {
+  padding: 24px;
+  font-weight: 700;
+  color: #163e35;
+  white-space: nowrap;
+}
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: white;
+  padding: 12px 32px;
+  height: auto;
+  min-height: 72px;
+  line-height: 1.5;
+  flex-wrap: wrap;
+}
+.app-content {
+  margin: 24px;
+  padding: 32px;
+  background: white;
+  border-radius: 12px;
+  min-width: 0;
+}
+.loading-state {
+  min-height: 50dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+@media (max-width: 760px) {
+  .login-page {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    padding: 32px 20px;
+    max-width: 480px;
+  }
+  .login-card .ant-card-body {
+    padding: 24px;
+  }
+  .app-header {
+    padding: 16px 24px;
+  }
+  .app-content {
+    margin: 12px;
+    padding: 20px;
+  }
+}
