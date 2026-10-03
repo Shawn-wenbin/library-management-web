@@ -2,6 +2,10 @@ import { Navigate, Route, Routes } from 'react-router'
 import { Result } from 'antd'
 import { AppLayout } from '../components/AppLayout'
 import { LoginPage } from '../pages/LoginPage'
+import { BooksPage } from '../pages/BooksPage'
+import { BookDetailPage } from '../pages/BookDetailPage'
+import { MyLoansPage } from '../pages/MyLoansPage'
+import { ProfilePage } from '../pages/ProfilePage'
 import { PlaceholderPage } from '../pages/PlaceholderPage'
 import { AdminGuard } from './AdminGuard'
 import { AuthGuard } from './AuthGuard'
@@ -14,16 +18,10 @@ export function AppRoutes() {
       <Route element={<AuthGuard />}>
         <Route element={<AppLayout />}>
           <Route index element={<Navigate to="/books" replace />} />
-          <Route path="books" element={<PlaceholderPage title="图书" />} />
-          <Route
-            path="books/:bookId"
-            element={<PlaceholderPage title="图书详情" />}
-          />
-          <Route path="me" element={<PlaceholderPage title="个人信息" />} />
-          <Route
-            path="me/loans"
-            element={<PlaceholderPage title="我的借阅" />}
-          />
+          <Route path="books" element={<BooksPage />} />
+          <Route path="books/:bookId" element={<BookDetailPage />} />
+          <Route path="me" element={<ProfilePage />} />
+          <Route path="me/loans" element={<MyLoansPage />} />
           <Route element={<AdminGuard />}>
             {adminNavigation.map(({ path, label }) => (
               <Route

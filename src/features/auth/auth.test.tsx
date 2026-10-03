@@ -9,13 +9,17 @@ import { Providers } from '../../app/providers'
 import { bindAuthCache, createQueryClient } from '../../app/queryClient'
 import { AppRoutes } from '../../router'
 import { useAuthStore } from '../../store/authStore'
-import { admin, reader } from '../../test/fixtures'
+import { admin, reader, pageOf } from '../../test/fixtures'
 
 let mock: MockAdapter
 let client: ReturnType<typeof createQueryClient>
 let unbind: () => void
 beforeEach(() => {
   mock = new MockAdapter(apiClient)
+  mock.onGet('/v1/books').reply(200, pageOf([]))
+  mock.onGet('/v1/authors').reply(200, pageOf([]))
+  mock.onGet('/v1/categories').reply(200, [])
+  mock.onGet('/v1/loans/me').reply(200, pageOf([]))
   client = createQueryClient()
   unbind = bindAuthCache(client)
 })

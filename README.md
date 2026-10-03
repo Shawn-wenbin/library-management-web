@@ -1,6 +1,6 @@
 # Library Management Web
 
-独立的 React + TypeScript 前端仓库。目前仅实现 Phase 1：工程基础与认证。
+独立的 React + TypeScript 前端仓库。目前已实现 Phase 1 工程基础与认证、Phase 2 读者核心功能。阶段记录见 [Phase 1](docs/phase1.md) 和 [Phase 2](docs/phase2.md)。
 
 ## 本地运行
 
@@ -45,16 +45,22 @@ src/
 │   └── queryClient.ts
 ├── components/
 │   ├── AppLayout/index.tsx
+│   ├── PageHeader/index.tsx
+│   ├── RequestError/index.tsx
 │   └── Loading/index.tsx
-├── features/auth/
-│   ├── api.ts
-│   ├── types.ts
-│   ├── hooks.ts
-│   ├── LoginForm.tsx
-│   ├── SessionBoundary.tsx
-│   └── auth.test.tsx
+├── features/
+│   ├── auth/
+│   ├── authors/
+│   ├── books/
+│   ├── categories/
+│   ├── loans/
+│   └── users/
 ├── pages/
 │   ├── LoginPage/index.tsx
+│   ├── BooksPage/index.tsx
+│   ├── BookDetailPage/index.tsx
+│   ├── MyLoansPage/index.tsx
+│   ├── ProfilePage/index.tsx
 │   └── PlaceholderPage/index.tsx
 ├── router/
 │   ├── index.tsx
@@ -65,7 +71,9 @@ src/
 ├── styles/global.css
 ├── test/
 │   ├── fixtures.ts
+│   ├── reader.test.tsx
 │   └── setup.ts
+├── utils/
 └── main.tsx
 ```
 
@@ -73,13 +81,15 @@ src/
 
 唯一契约是 `docs/api/openapi.json`。`pnpm api:generate` 调用 `openapi-typescript`，输出 `src/api/generated/schema.d.ts`。生成文件不手工编辑，也不参与 Prettier/ESLint 格式改写。认证模块从生成的 `paths` 引用请求和响应类型，没有复制后端 DTO。
 
-本阶段仅调用两个接口：
+认证使用以下接口：
 
 - `POST /api/v1/auth/login`：JSON `{ username, password }`，密码 8–128 字符；成功返回 `access_token`，`token_type` 可省略、默认 `bearer`。
 - `GET /api/v1/users/me`：请求头 `Authorization: Bearer <token>`，成功返回 `UserOutput`，其中 `role` 为 `READER | ADMIN`。
 
+Phase 2 另接入图书列表/详情、分类列表、作者列表/详情、我的借阅、借阅和归还接口；参数与字段说明见 [Phase 2 接口记录](docs/phase2.md#4-实际使用的后端-api)。
+
 规范提到用户名/邮箱登录，但契约仅声明 `username`，因此界面只承诺用户名登录。
-OpenAPI 未声明 401/403/409/5xx 的响应 schema；错误层按状态码处理未知数据，409 仅在安全识别到字符串 `detail` 时展示原文，否则使用通用提示。此兼容处理不等于确认后端返回该结构。422 使用已声明的校验项结构，并做运行时收窄。5xx 不展示服务端内部错误内容。
+OpenAPI 未声明 401/403/409/5xx 的响应 schema。真实联调确认后端返回 `{ code, message, details }`，422 的 `details` 项仅含 `loc/type`，与 OpenAPI 声明的 `detail` 数组存在差异。错误层对未知数据安全收窄，兼容实际错误信封与标准 FastAPI `detail`；409 展示业务原因，422 保留字段定位，并在缺少 `msg` 时生成可读提示。5xx 始终使用通用提示，不展示服务端内部错误内容。差异已记录，未修改后端或生成类型。
 OpenAPI 仅声明 HTTP Bearer，未逐接口描述角色授权规则；前端管理路由按项目规范限制为 ADMIN，实际权限仍由后端执行。
 没有 refresh token 或退出登录接口，退出仅清除本地会话和查询缓存。
 
@@ -96,7 +106,9 @@ OpenAPI 仅声明 HTTP Bearer，未逐接口描述角色授权规则；前端管
 
 ## 阶段边界与验证
 
-图书、借阅、个人信息和管理员业务路由只显示占位，不发送业务请求。没有实现 Phase 2–4、注册、资料修改、预约或统计模块。
+读者可在 `/books` 搜索、筛选、排序与分页，进入 `/books/:bookId` 查看详情和借阅，在 `/me/loans` 查看当前/历史借阅并归还，在 `/me` 查看个人信息。筛选和分页与 URL 同步；借还成功后刷新图书与借阅缓存。管理员业务路由仍保留 Phase 1 占位，没有实现 Phase 3 CRUD、注册、资料修改、预约或统计模块。
 
 Vitest + React Testing Library 通过 Axios adapter mock 验证真实组件、路由、查询缓存和拦截器：表单校验/提交、认证恢复、退出、401/403/409/422/500、网络异常、身份重试、角色导航、停用账号以及旧会话响应隔离。
 这些自动化测试不替代使用真实后端账号的端到端联调。
+
+2026-10-03 已使用 READER 账号完成真实 Chrome 与 FastAPI 借还联调，测试新增借阅均已归还，详见 [Phase 2 联调记录](docs/phase2.md#9-真实后端账号联调2026-10-03)。账号密码与 token 不保存在仓库中。

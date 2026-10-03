@@ -91,4 +91,70 @@ describe('统一 Axios Client', () => {
       message: '无法连接服务器，请检查网络后重试',
     })
   })
+
+  it.each([
+    [
+      409,
+      { code: 'LOAN_ALREADY_RETURNED', message: '该借阅已归还', details: null },
+      '该借阅已归还',
+    ],
+    [
+      404,
+      { code: 'BOOK_NOT_FOUND', message: '图书不存在', details: null },
+      '图书不存在',
+    ],
+    [
+      403,
+      { code: 'FORBIDDEN', message: '需要管理员权限', details: null },
+      '无权限访问',
+    ],
+    [
+      500,
+      {
+        code: 'INTERNAL_ERROR',
+        message: 'sensitive stack trace',
+        details: null,
+      },
+      '服务暂时不可用，请稍后重试',
+    ],
+  ])(
+    '兼容真实后端 %s 错误信封，同时保护内部错误',
+    async (status, body, message) => {
+      mock.onGet('/v1/books').reply(status, body)
+      await expect(apiClient.get('/v1/books')).rejects.toMatchObject({
+        status,
+        message,
+      })
+    },
+  )
+
+  it('真实 422 details 缺少 msg 时保留字段并生成可读反馈，丢弃非法项', async () => {
+    mock.onGet('/v1/books').reply(422, {
+      code: 'VALIDATION_ERROR',
+      message: '请求参数不合法',
+      details: [
+        { loc: ['query', 'page'], type: 'greater_than_equal' },
+        { loc: ['body', 'username'], type: 'unknown_constraint' },
+        null,
+        { loc: [null], type: 'missing' },
+        { loc: ['page'] },
+      ],
+    })
+    await expect(apiClient.get('/v1/books')).rejects.toMatchObject({
+      status: 422,
+      message: '请求参数不合法',
+      issues: [
+        {
+          loc: ['query', 'page'],
+          type: 'greater_than_equal',
+          msg: '数值不能小于允许的下限',
+        },
+        {
+          loc: ['body', 'username'],
+          type: 'unknown_constraint',
+          msg: '此字段不符合要求，请检查输入',
+        },
+      ],
+    })
+  })
 })

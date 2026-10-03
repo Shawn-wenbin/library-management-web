@@ -1,10 +1,10 @@
 import { Spin } from 'antd'
 
-export function Loading() {
+export function Loading({ label = '正在确认登录状态…' }: { label?: string }) {
   return (
     <div className="loading-state" role="status">
       <Spin />
-      <span>正在确认登录状态…</span>
+      <span>{label}</span>
     </div>
   )
 }

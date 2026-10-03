@@ -29,3 +29,7 @@ class ResizeObserverMock {
   disconnect() {}
 }
 vi.stubGlobal('ResizeObserver', ResizeObserverMock)
+
+// Ant Design measures scrollbar pseudo-elements; jsdom only implements element styles.
+const getComputedStyle = window.getComputedStyle.bind(window)
+window.getComputedStyle = (element) => getComputedStyle(element)

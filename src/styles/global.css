@@ -78,7 +78,52 @@ body {
   justify-content: center;
   gap: 12px;
 }
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+.page-header h2.ant-typography {
+  margin: 0 0 8px;
+}
+.page-header .ant-typography {
+  margin-bottom: 0;
+}
+.content-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.book-filters {
+  display: grid;
+  grid-template-columns: 2fr repeat(4, minmax(130px, 1fr));
+  gap: 16px;
+}
+.full-width {
+  width: 100%;
+}
+.full-width .ant-select {
+  width: 100%;
+}
+.filter-actions {
+  margin-bottom: 16px;
+}
+.preserve-lines {
+  white-space: pre-wrap;
+}
+@media (max-width: 1200px) {
+  .book-filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
 @media (max-width: 760px) {
+  .book-filters {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
   .login-page {
     grid-template-columns: 1fr;
     gap: 24px;
