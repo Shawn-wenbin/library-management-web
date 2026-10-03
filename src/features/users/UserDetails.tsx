@@ -1,4 +1,5 @@
 import { Descriptions, Drawer } from 'antd'
+import { Loading } from '../../components/Loading'
 import { RequestError } from '../../components/RequestError'
 import { formatDateTime } from '../../utils/formatDate'
 import { useUser } from './adminHooks'
@@ -14,7 +15,7 @@ export function UserDetails({
   const user = query.data
   return (
     <Drawer open title={`用户 #${id}`} onClose={onClose}>
-      {query.isPending && <span role="status">正在加载用户详情…</span>}
+      {query.isPending && <Loading compact label="正在加载用户详情…" />}
       {query.error && (
         <RequestError
           error={query.error}

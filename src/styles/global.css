@@ -78,6 +78,9 @@ body {
   justify-content: center;
   gap: 12px;
 }
+.loading-state-compact {
+  min-height: 64px;
+}
 .page-header {
   display: flex;
   align-items: center;

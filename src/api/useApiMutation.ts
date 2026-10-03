@@ -12,8 +12,7 @@ export function useApiMutation<TData, TVariables>(
   keys: readonly QueryKey[],
 ) {
   const client = useQueryClient()
-  const session = useAuthStore((state) => state.sessionVersion)
-  const refresh = async () => {
+  const refresh = async (session: number) => {
     if (session !== useAuthStore.getState().sessionVersion) return
     await Promise.all(
       keys.map((queryKey) => client.invalidateQueries({ queryKey })),
@@ -22,9 +21,12 @@ export function useApiMutation<TData, TVariables>(
   return useMutation({
     mutationFn,
     retry: false,
-    onSuccess: refresh,
-    onError: (error) => {
-      if (error instanceof ApiError && error.status === 409) return refresh()
+    // Mutation options can update on rerender. Bind the session to this submission.
+    onMutate: () => ({ session: useAuthStore.getState().sessionVersion }),
+    onSuccess: (_data, _variables, context) => refresh(context.session),
+    onError: (error, _variables, context) => {
+      if (context && error instanceof ApiError && error.status === 409)
+        return refresh(context.session)
     },
   })
 }

@@ -1,6 +1,8 @@
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import { Button, Select, Space } from 'antd'
 import { queryKeys } from '../../api/queryKeys'
+import { EmptyState } from '../../components/EmptyState'
+import { Loading } from '../../components/Loading'
 import { RequestError } from '../../components/RequestError'
 import { getAuthor, getAuthors } from './api'
 
@@ -49,7 +51,15 @@ export function AuthorSelect({
         onChange={onChange}
         loading={query.isFetching}
         options={[...options.values()]}
-        notFoundContent={query.isPending ? '正在加载作者…' : '暂无作者'}
+        notFoundContent={
+          query.isPending ? (
+            <Loading compact label="正在加载作者…" />
+          ) : query.isError ? (
+            '作者加载失败'
+          ) : (
+            <EmptyState description="暂无作者" />
+          )
+        }
         popupRender={(menu) => (
           <>
             {menu}

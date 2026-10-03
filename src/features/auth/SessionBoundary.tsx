@@ -10,7 +10,7 @@ export function SessionBoundary({
   children: (user: CurrentUser) => ReactNode
 }) {
   const query = useCurrentUser()
-  if (query.isPending) return <Loading />
+  if (query.isPending) return <Loading label="正在确认登录状态…" />
   if (query.isError)
     return (
       <Result

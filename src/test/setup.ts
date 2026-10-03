@@ -1,7 +1,10 @@
 import '@testing-library/jest-dom/vitest'
-import { cleanup } from '@testing-library/react'
+import { cleanup, configure } from '@testing-library/react'
 import { afterEach, vi } from 'vitest'
 import { useAuthStore } from '../store/authStore'
+
+// Lazy page imports are transformed on first use in Vitest, unlike a production chunk.
+configure({ asyncUtilTimeout: 5000 })
 
 afterEach(() => {
   cleanup()

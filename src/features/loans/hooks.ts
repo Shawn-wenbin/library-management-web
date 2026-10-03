@@ -1,7 +1,6 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { queryKeys } from '../../api/queryKeys'
-import { ApiError } from '../../api/errors'
-import { useAuthStore } from '../../store/authStore'
+import { useApiMutation } from '../../api/useApiMutation'
 import { borrowBook, getMyLoans, returnLoan } from './api'
 import type { Loan, MyLoanParams } from './types'
 
@@ -13,24 +12,11 @@ export function useMyLoans(params: MyLoanParams) {
 }
 
 function useLoanMutation(mutationFn: (id: number) => Promise<Loan>) {
-  const client = useQueryClient()
-  // A mutation from a previous login must not invalidate the new user's cache.
-  const sessionVersion = useAuthStore((state) => state.sessionVersion)
-  const refresh = async () => {
-    if (useAuthStore.getState().sessionVersion !== sessionVersion) return
-    await Promise.all([
-      client.invalidateQueries({ queryKey: queryKeys.books.all }),
-      client.invalidateQueries({ queryKey: queryKeys.loans.all }),
-      client.invalidateQueries({ queryKey: queryKeys.bookCopies.all }),
-    ])
-  }
-  return useMutation({
-    mutationFn,
-    onSuccess: refresh,
-    onError: (error) => {
-      if (error instanceof ApiError && error.status === 409) return refresh()
-    },
-  })
+  return useApiMutation(mutationFn, [
+    queryKeys.books.all,
+    queryKeys.loans.all,
+    queryKeys.bookCopies.all,
+  ])
 }
 
 export function useBorrowBook() {

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Button, Layout, Menu, Space, Tag, Typography } from 'antd'
-import { Link, Outlet, useLocation } from 'react-router'
+import { Link, useLocation } from 'react-router'
+import { PageBoundary } from '../../router/PageBoundary'
 import { logout, useCurrentUser } from '../../features/auth/hooks'
 import { getNavigation } from '../../router/navigation'
 
@@ -56,7 +57,7 @@ export function AppLayout() {
           </Space>
         </Layout.Header>
         <Layout.Content className="app-content">
-          <Outlet />
+          <PageBoundary />
         </Layout.Content>
       </Layout>
     </Layout>

@@ -1,4 +1,4 @@
-import { Alert, Button, Popconfirm, Space, Table, Tabs, Tag } from 'antd'
+import { Alert, Button, Popconfirm, Space, Tabs, Tag } from 'antd'
 import { Link, useSearchParams } from 'react-router'
 import { RequestError } from '../../components/RequestError'
 import { formatDateTime } from '../../utils/formatDate'
@@ -7,7 +7,7 @@ import {
   positiveInteger,
   updateSearchParams,
 } from '../../utils/searchParams'
-import { usePageCorrection } from '../../utils/usePageCorrection'
+import { ManagementTable } from '../../components/ManagementTable'
 import { useMyLoans, useReturnLoan } from './hooks'
 import type { Loan, MyLoanParams } from './types'
 
@@ -21,11 +21,6 @@ export function MyLoans() {
   }
   const query = useMyLoans(params)
   const mutation = useReturnLoan()
-  usePageCorrection(
-    params.page ?? 1,
-    params.page_size ?? 20,
-    query.isSuccess ? query.data.total : undefined,
-  )
   return (
     <div className="content-stack">
       <Tabs
@@ -45,9 +40,6 @@ export function MyLoans() {
         }}
       />
       <Space wrap>
-        <Button loading={query.isFetching} onClick={() => void query.refetch()}>
-          刷新借阅
-        </Button>
         {params.book_id && (
           <Tag
             closable
@@ -65,26 +57,13 @@ export function MyLoans() {
         <Alert type="success" showIcon message="归还成功" />
       )}
       {mutation.isError && <RequestError error={mutation.error} />}
-      {query.isError && (
-        <RequestError
-          error={query.error}
-          retry={() => void query.refetch()}
-          loading={query.isFetching}
-        />
-      )}
-      {query.isPending && <span role="status">正在加载借阅记录…</span>}
-      <Table<Loan>
-        rowKey="id"
-        dataSource={query.isError ? [] : query.data?.items}
-        loading={query.isFetching}
-        scroll={{ x: 1100 }}
-        locale={{
-          emptyText: query.isError
-            ? '借阅记录加载失败'
-            : query.isPending
-              ? ' '
-              : '暂无借阅记录',
-        }}
+      <ManagementTable<Loan>
+        query={query}
+        label="借阅"
+        emptyDescription="暂无借阅记录"
+        loadingLabel="正在加载借阅记录…"
+        scrollX={1100}
+        totalUnit="条"
         columns={[
           { title: '借阅编号', dataIndex: 'id' },
           {
@@ -149,21 +128,6 @@ export function MyLoans() {
               ),
           },
         ]}
-        pagination={{
-          current: params.page,
-          pageSize: params.page_size,
-          total: query.data?.total ?? 0,
-          showSizeChanger: true,
-          pageSizeOptions: [10, 20, 50, 100],
-          showTotal: (total) => `共 ${total} 条`,
-          onChange: (page, pageSize) =>
-            setSearch(
-              updateSearchParams(search, {
-                page: pageSize !== params.page_size ? 1 : page,
-                page_size: pageSize,
-              }),
-            ),
-        }}
       />
     </div>
   )

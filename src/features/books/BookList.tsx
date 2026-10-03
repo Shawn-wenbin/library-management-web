@@ -1,8 +1,7 @@
-import { Button, Table, Tag } from 'antd'
+import { Tag } from 'antd'
 import { Link, useSearchParams } from 'react-router'
-import { RequestError } from '../../components/RequestError'
 import { updateSearchParams } from '../../utils/searchParams'
-import { usePageCorrection } from '../../utils/usePageCorrection'
+import { ManagementTable } from '../../components/ManagementTable'
 import { BookFilters } from './BookFilters'
 import { useBooks } from './hooks'
 import { bookSearchParams } from './search'
@@ -12,11 +11,6 @@ export function BookList() {
   const [search, setSearch] = useSearchParams()
   const params = bookSearchParams(search)
   const query = useBooks(params)
-  usePageCorrection(
-    params.page ?? 1,
-    params.page_size ?? 20,
-    query.isSuccess ? query.data.total : undefined,
-  )
   return (
     <div className="content-stack">
       <BookFilters
@@ -33,31 +27,13 @@ export function BookList() {
         }
         onReset={() => setSearch({})}
       />
-      <div>
-        <Button loading={query.isFetching} onClick={() => void query.refetch()}>
-          刷新图书
-        </Button>
-      </div>
-      {query.isError && (
-        <RequestError
-          error={query.error}
-          retry={() => void query.refetch()}
-          loading={query.isFetching}
-        />
-      )}
-      {query.isPending && <span role="status">正在加载图书…</span>}
-      <Table<Book>
-        rowKey="id"
-        dataSource={query.isError ? [] : query.data?.items}
-        loading={query.isFetching}
-        scroll={{ x: 800 }}
-        locale={{
-          emptyText: query.isError
-            ? '图书加载失败'
-            : query.isPending
-              ? ' '
-              : '暂无符合条件的图书',
-        }}
+      <ManagementTable<Book>
+        query={query}
+        label="图书"
+        emptyDescription="暂无符合条件的图书"
+        loadingLabel="正在加载图书…"
+        scrollX={800}
+        totalUnit="本"
         columns={[
           {
             title: '书名',
@@ -111,21 +87,6 @@ export function BookList() {
             ),
           },
         ]}
-        pagination={{
-          current: params.page,
-          pageSize: params.page_size,
-          total: query.data?.total ?? 0,
-          showSizeChanger: true,
-          pageSizeOptions: [10, 20, 50, 100],
-          showTotal: (total) => `共 ${total} 本`,
-          onChange: (page, pageSize) =>
-            setSearch(
-              updateSearchParams(search, {
-                page: pageSize !== params.page_size ? 1 : page,
-                page_size: pageSize,
-              }),
-            ),
-        }}
       />
     </div>
   )

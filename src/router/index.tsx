@@ -1,24 +1,78 @@
-import { AdminUsersPage } from '../pages/admin/UsersPage'
-import { AdminBooksPage } from '../pages/admin/BooksPage'
-import { AdminAuthorsPage } from '../pages/admin/AuthorsPage'
-import { AdminCategoriesPage } from '../pages/admin/CategoriesPage'
-import { AdminLoansPage } from '../pages/admin/LoansPage'
-import { AdminBookCopiesPage } from '../pages/admin/BookCopiesPage'
+import { lazy } from 'react'
+import { PageBoundary } from './PageBoundary'
 import { Navigate, Route, Routes } from 'react-router'
 import { Result } from 'antd'
 import { AppLayout } from '../components/AppLayout'
-import { LoginPage } from '../pages/LoginPage'
-import { BooksPage } from '../pages/BooksPage'
-import { BookDetailPage } from '../pages/BookDetailPage'
-import { MyLoansPage } from '../pages/MyLoansPage'
-import { ProfilePage } from '../pages/ProfilePage'
 import { AdminGuard } from './AdminGuard'
 import { AuthGuard } from './AuthGuard'
+
+const LoginPage = lazy(() =>
+  import('../pages/LoginPage').then((module) => ({
+    default: module.LoginPage,
+  })),
+)
+const BooksPage = lazy(() =>
+  import('../pages/BooksPage').then((module) => ({
+    default: module.BooksPage,
+  })),
+)
+const BookDetailPage = lazy(() =>
+  import('../pages/BookDetailPage').then((module) => ({
+    default: module.BookDetailPage,
+  })),
+)
+const MyLoansPage = lazy(() =>
+  import('../pages/MyLoansPage').then((module) => ({
+    default: module.MyLoansPage,
+  })),
+)
+const ProfilePage = lazy(() =>
+  import('../pages/ProfilePage').then((module) => ({
+    default: module.ProfilePage,
+  })),
+)
+const AdminUsersPage = lazy(() =>
+  import('../pages/admin/UsersPage').then((module) => ({
+    default: module.AdminUsersPage,
+  })),
+)
+const AdminBooksPage = lazy(() =>
+  import('../pages/admin/BooksPage').then((module) => ({
+    default: module.AdminBooksPage,
+  })),
+)
+const AdminAuthorsPage = lazy(() =>
+  import('../pages/admin/AuthorsPage').then((module) => ({
+    default: module.AdminAuthorsPage,
+  })),
+)
+const AdminCategoriesPage = lazy(() =>
+  import('../pages/admin/CategoriesPage').then((module) => ({
+    default: module.AdminCategoriesPage,
+  })),
+)
+const AdminLoansPage = lazy(() =>
+  import('../pages/admin/LoansPage').then((module) => ({
+    default: module.AdminLoansPage,
+  })),
+)
+const AdminBookCopiesPage = lazy(() =>
+  import('../pages/admin/BookCopiesPage').then((module) => ({
+    default: module.AdminBookCopiesPage,
+  })),
+)
 
 export function AppRoutes() {
   return (
     <Routes>
-      <Route path="/login" element={<LoginPage />} />
+      <Route
+        path="/login"
+        element={
+          <PageBoundary>
+            <LoginPage />
+          </PageBoundary>
+        }
+      />
       <Route element={<AuthGuard />}>
         <Route element={<AppLayout />}>
           <Route index element={<Navigate to="/books" replace />} />

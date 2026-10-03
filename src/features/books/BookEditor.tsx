@@ -1,5 +1,7 @@
 import { Form, Input, Select, Switch } from 'antd'
 import { EditorModal } from '../../components/EditorModal'
+import { EmptyState } from '../../components/EmptyState'
+import { Loading } from '../../components/Loading'
 import { RequestError } from '../../components/RequestError'
 import { dateRules, requiredText, optionalText } from '../../utils/formRules'
 import { AuthorsSelect } from '../authors/AuthorsSelect'
@@ -72,6 +74,15 @@ export function BookEditor({
       >
         <Select
           loading={categories.isFetching}
+          notFoundContent={
+            categories.isPending ? (
+              <Loading compact label="正在加载分类…" />
+            ) : categories.isError ? (
+              '分类加载失败'
+            ) : (
+              <EmptyState description="暂无分类" />
+            )
+          }
           options={categories.data?.map((category) => ({
             value: category.id,
             label: category.name,

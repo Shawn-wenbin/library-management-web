@@ -1,6 +1,8 @@
 import { Button, Checkbox, Form, Input, Select, Space } from 'antd'
 import { AuthorSelect } from '../authors/AuthorSelect'
 import { useCategories } from '../categories/hooks'
+import { EmptyState } from '../../components/EmptyState'
+import { Loading } from '../../components/Loading'
 import { RequestError } from '../../components/RequestError'
 import type { BookParams } from './types'
 
@@ -51,7 +53,13 @@ export function BookFilters({
               label: category.name,
             }))}
             notFoundContent={
-              categories.isPending ? '正在加载分类…' : '暂无分类'
+              categories.isPending ? (
+                <Loading compact label="正在加载分类…" />
+              ) : categories.isError ? (
+                '分类加载失败'
+              ) : (
+                <EmptyState description="暂无分类" />
+              )
             }
           />
         </Form.Item>
