@@ -1,9 +1,5 @@
 import { apiClient } from '../../api/client'
-import type { paths } from '../../api/generated/schema'
-
-type AuthorPage =
-  paths['/api/v1/authors']['get']['responses'][200]['content']['application/json']
-type Author = AuthorPage['items'][number]
+import type { Author, AuthorPage } from './adminTypes'
 
 export async function getAuthors(page: number, signal?: AbortSignal) {
   return (

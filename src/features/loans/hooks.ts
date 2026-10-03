@@ -21,6 +21,7 @@ function useLoanMutation(mutationFn: (id: number) => Promise<Loan>) {
     await Promise.all([
       client.invalidateQueries({ queryKey: queryKeys.books.all }),
       client.invalidateQueries({ queryKey: queryKeys.loans.all }),
+      client.invalidateQueries({ queryKey: queryKeys.bookCopies.all }),
     ])
   }
   return useMutation({

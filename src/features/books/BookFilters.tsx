@@ -8,15 +8,32 @@ export function BookFilters({
   params,
   onApply,
   onReset,
+  admin = false,
 }: {
   params: BookParams
   onApply: (values: BookParams) => void
   onReset: () => void
+  admin?: boolean
 }) {
   const categories = useCategories()
   return (
     <Form layout="vertical" initialValues={params} onFinish={onApply}>
       <div className="book-filters">
+        {admin && (
+          <Form.Item
+            name="is_active"
+            label="上架状态"
+            getValueProps={(value: boolean) => ({ value: String(value) })}
+            normalize={(value: string) => value === 'true'}
+          >
+            <Select
+              options={[
+                { value: 'true', label: '已上架' },
+                { value: 'false', label: '已下架' },
+              ]}
+            />
+          </Form.Item>
+        )}
         <Form.Item
           name="keyword"
           label="关键词"
